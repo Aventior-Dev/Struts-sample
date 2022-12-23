@@ -6,6 +6,8 @@
 <struts>
 
 	<constant name="struts.devMode" value="true" />
+	<constant name="struts.sonar.enable" value="true" />
+	<constant name="struts.sonar.jspReload" value="false" />
 
 	<package name="basicstruts2" extends="struts-default">
 
