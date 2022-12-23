@@ -20,3 +20,14 @@ In a case of a successful login, the user is directed to a welcome page and gree
 As per the predefined SQL queries, these credentials will result in a successful login:
 * Username: `sourabh`
 * Password: `password` 
+
+### Database password
+Currently, project is configured for following database credentials 
+username : root 
+password : root 
+
+This can be changed in following file
+```aidl
+org/apache/struts/loginstruts/model/LoginModel.java
+```
+
