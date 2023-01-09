@@ -25,7 +25,7 @@ As per the predefined SQL queries, these credentials will result in a successful
 Currently, project is configured for following database credentials 
 username : root 
 password : root 
-
+ 
 This can be changed in following file
 ```aidl
 org/apache/struts/loginstruts/model/LoginModel.java
