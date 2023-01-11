@@ -18,14 +18,14 @@ The application features a Login feature, where the user is required to enter th
 In a case of a successful login, the user is directed to a welcome page and greeted with a  ‘Successful Login’ message. Otherwise, the user is redirected back to the home page with an ‘Unsuccessful Login’ message. 
 
 As per the predefined SQL queries, these credentials will result in a successful login:
-* Username: `sourabh`
+* Username: `sourabh` 
 * Password: `password` 
 
 ### Database password
 Currently, project is configured for following database credentials 
 username : root 
 password : root 
-
+ 
 This can be changed in following file
 ```aidl
 org/apache/struts/loginstruts/model/LoginModel.java
