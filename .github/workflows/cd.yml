@@ -11,6 +11,9 @@ jobs:
     env:
       IMAGE_NAME: sampleapp
       PROJECT_ID: driver-297313
+    outputs:
+      IMAGE_NAME: ${{ env.IMAGE_NAME }}
+      IMAGE_TAG: ${{ steps.docker-push.output.git_tag }}
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -25,12 +28,6 @@ jobs:
       with:
         project_id: ${{ env.PROJECT_ID }}
 
-    # - uses: google-github-actions/setup-gcloud@v0
-    #   with:
-    #     service_account_key: ${{ secrets.GOOGLE_CREDENTIALS }}
-    #     project_id: ${{ env.PROJECT_ID }}
-    #     export_default_credentials: true
-
     - name: Build Docker Image
       run: docker build -t $IMAGE_NAME:latest .
 
@@ -39,6 +36,7 @@ jobs:
         gcloud auth configure-docker --quiet
 
     - name: Push Docker Image to Container Registry (GCR)
+      id: docker-push
       env:
         GIT_TAG: v1.0.0
       run: |-
@@ -46,3 +44,24 @@ jobs:
         docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
         docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
         docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
+        echo "::set-output name=git_tag::$GIT_TAG"
+
+  update-chart:
+    name: Update Helm Chart Values file
+    runs-on: ubuntu-latest
+    needs: build-push-gcr
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: 'aventiortechnology/CRIO-SiteApp'
+          ref: 'main'
+          path: '${{needs.build-push-gcr.outputs.IMAGE_NAME}}'
+
+      - name: Update values.yaml
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: 'values.yaml'
+          propertyPath: 'image.tag'
+          value: ${{needs.build-push-gcr.outputs.IMAGE_TAG}} 
+          commitChange: true
