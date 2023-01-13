@@ -17,10 +17,10 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-#      - name: Build with Maven
-#        run: mvn compile
-#      - name: Test with Maven
-#        run: mvn test
+      - name: Build with Maven
+        run: mvn compile
+      - name: Test with Maven
+        run: mvn test
 
 #     SonarQube analysis
       - name: Cache SonarQube packages
@@ -35,13 +35,7 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-#      - name: Official SonarQube Scan
-#        uses: SonarSource/sonarqube-scan-action@v1.2.0
-#        env:
-#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-#          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-#          SONAR_PROJECT_KEY : struts_sample
-      - name: SonarQube Build and analyze
+      - name: SonarQube Build and Scan
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

@@ -8,7 +8,7 @@ public class LoginAction extends ActionSupport {
     
     public String execute() {
         String ret = ERROR;
-        boolean validateUser = loginModel.validateUser()
+        boolean validateUser = loginModel.validateUser();
 
         if(!validateUser)
         	setErrorMessage("Unsuccessful Login, Please try again");
