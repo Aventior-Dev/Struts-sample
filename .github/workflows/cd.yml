@@ -65,5 +65,5 @@ jobs:
           valueFile: 'values.yaml'
           propertyPath: 'image.tag'
           value: ${{needs.build-push-gcr.outputs.IMAGE_TAG}}
-          repository: ${{github.repository}}
+          repository: 'aventiortechnology/CRIO-SiteApp'
           commitChange: true
