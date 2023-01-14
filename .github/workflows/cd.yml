@@ -57,7 +57,7 @@ jobs:
           repository: 'aventiortechnology/CRIO-SiteApp'
           ref: 'main'
           path: '${{needs.build-push-gcr.outputs.IMAGE_NAME}}'
-          token: '${{ github.token }}'
+          token: '${{ secrets.PAT }}'
 
       - name: Update values.yaml
         uses: fjogeleit/yaml-update-action@main
