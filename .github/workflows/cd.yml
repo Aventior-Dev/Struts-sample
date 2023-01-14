@@ -64,5 +64,6 @@ jobs:
         with:
           valueFile: 'values.yaml'
           propertyPath: 'image.tag'
-          value: ${{needs.build-push-gcr.outputs.IMAGE_TAG}} 
+          value: ${{needs.build-push-gcr.outputs.IMAGE_TAG}}
+          repository: ${{github.repository}}
           commitChange: true
