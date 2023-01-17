@@ -1,5 +1,5 @@
 ---
-name: Build and Push Artifacts to GCP
+name: CD
 on: workflow_dispatch
 # on:
 #   push:
@@ -28,42 +28,51 @@ jobs:
       with:
         project_id: ${{ env.PROJECT_ID }}
 
-    - name: Build Docker Image
-      run: docker build -t $IMAGE_NAME:latest .
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'adopt'
 
-    - name: Configure Docker Client
-      run: |-
-        gcloud auth configure-docker --quiet
+    - name: Publish package
+      run: mvn -f pom.xml  package
 
-    - name: Push Docker Image to Container Registry (GCR)
-      id: docker-push
-      env:
-        GIT_TAG: v1.0.0
-      run: |-
-        docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
-        docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
-        docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
-        docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
-        echo "::set-output name=git_tag::$GIT_TAG"
+  #   - name: Build Docker Image
+  #     run: docker build -t $IMAGE_NAME:latest .
 
-  update-chart:
-    name: Update Helm Chart Values file
-    runs-on: ubuntu-latest
-    needs: build-push-gcr
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          repository: 'aventiortechnology/CRIO-SiteApp'
-          ref: 'main'
-          path: '${{needs.build-push-gcr.outputs.IMAGE_NAME}}'
-          token: '${{ secrets.PAT }}'
+  #   - name: Configure Docker Client
+  #     run: |-
+  #       gcloud auth configure-docker --quiet
 
-      - name: Update values.yaml
-        uses: fjogeleit/yaml-update-action@main
-        with:
-          valueFile: 'values.yaml'
-          propertyPath: 'image.tag'
-          value: ${{needs.build-push-gcr.outputs.IMAGE_TAG}}
-          repository: 'aventiortechnology/CRIO-SiteApp'
-          commitChange: true
+  #   - name: Push Docker Image to Container Registry (GCR)
+  #     id: docker-push
+  #     env:
+  #       GIT_TAG: v1.0.0
+  #     run: |-
+  #       docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
+  #       docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
+  #       docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
+  #       docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
+  #       echo "::set-output name=git_tag::$GIT_TAG"
+
+  # update-chart:
+  #   name: Update Helm Chart Values file
+  #   runs-on: ubuntu-latest
+  #   needs: build-push-gcr
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #       with:
+  #         repository: 'aventiortechnology/CRIO-SiteApp'
+  #         ref: 'main'
+  #         path: '${{needs.build-push-gcr.outputs.IMAGE_NAME}}'
+  #         token: '${{ secrets.PAT }}'
+
+  #     - name: Update values.yaml
+  #       uses: fjogeleit/yaml-update-action@main
+  #       with:
+  #         valueFile: 'values.yaml'
+  #         propertyPath: 'image.tag'
+  #         value: ${{needs.build-push-gcr.outputs.IMAGE_TAG}}
+  #         repository: 'aventiortechnology/CRIO-SiteApp'
+  #         commitChange: true
