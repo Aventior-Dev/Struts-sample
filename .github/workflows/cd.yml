@@ -11,6 +11,7 @@ jobs:
     env:
       IMAGE_NAME: sampleapp
       PROJECT_ID: driver-297313
+      REGION: us-central1
     outputs:
       IMAGE_NAME: ${{ env.IMAGE_NAME }}
       IMAGE_TAG: ${{ steps.docker-push.output.git_tag }}
@@ -40,23 +41,27 @@ jobs:
     - name: Publish package
       run: mvn deploy
 
-  #   - name: Build Docker Image
-  #     run: docker build -t $IMAGE_NAME:latest .
+    - name: Build Docker Image
+      run: docker build -t $IMAGE_NAME:latest .
 
-  #   - name: Configure Docker Client
-  #     run: |-
-  #       gcloud auth configure-docker --quiet
+    - name: Configure Docker Client
+      run: |-
+        gcloud auth configure-docker --quiet
 
-  #   - name: Push Docker Image to Container Registry (GCR)
-  #     id: docker-push
-  #     env:
-  #       GIT_TAG: v1.0.0
-  #     run: |-
-  #       docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
-  #       docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
-  #       docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
-  #       docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
-  #       echo "::set-output name=git_tag::$GIT_TAG"
+    - name: Push Docker Image to Container Registry (GCR)
+      id: docker-push
+      env:
+        GIT_TAG: v1.0.0
+      run: |-
+        # docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
+        # docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
+        # docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
+        # docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
+        docker tag $IMAGE_NAME:latest $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:latest
+        docker tag $IMAGE_NAME:latest $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:$GIT_TAG
+        docker push $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:latest
+        docker push $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:$GIT_TAG
+        echo "::set-output name=git_tag::$GIT_TAG"
 
   # update-chart:
   #   name: Update Helm Chart Values file
