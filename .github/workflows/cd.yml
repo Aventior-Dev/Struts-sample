@@ -34,8 +34,11 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
 
-    - name: Publish package
+    - name: Build package
       run: mvn -f pom.xml  package
+
+    - name: Publish package
+      run: mvn deploy
 
   #   - name: Build Docker Image
   #     run: docker build -t $IMAGE_NAME:latest .
