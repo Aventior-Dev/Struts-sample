@@ -52,7 +52,7 @@ jobs:
     - name: Push Docker Image to Container Registry (GCR)
       id: docker-push
       env:
-        GIT_TAG: v1.0.0
+        GIT_TAG: v1.0.1
       run: |-
         # docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
         # docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
@@ -81,9 +81,19 @@ jobs:
         uses: fjogeleit/yaml-update-action@main
         with:
           valueFile: sampleapp/values.yaml
-          propertyPath: 'image.tag'
-          value: ${{needs.build-push-gcr.outputs.IMAGE_TAG}}
+          # propertyPath: 'image.tag'
+          # value: ${{needs.build-push-gcr.outputs.IMAGE_TAG}}
           repository: 'aventiortechnology/CRIO-SiteApp'
           branch: main
           token: '${{ secrets.PAT }}'
+          message: 'Update Image Version to ${{needs.build-push-gcr.outputs.IMAGE_TAG}}'
           commitChange: true
+          changes: |
+            {
+              "sampleapp/values.yaml": {
+                "image.tag": "${{needs.build-push-gcr.outputs.IMAGE_TAG}}"
+              },
+               "sampleapp/Chart.yaml": {
+                "appVersion": "${{needs.build-push-gcr.outputs.IMAGE_TAG}}"
+              }
+            }
