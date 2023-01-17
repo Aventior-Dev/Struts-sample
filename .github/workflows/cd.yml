@@ -64,24 +64,25 @@ jobs:
         docker push $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:$GIT_TAG
         echo "::set-output name=git_tag::$GIT_TAG"
 
-  # update-chart:
-  #   name: Update Helm Chart Values file
-  #   runs-on: ubuntu-latest
-  #   needs: build-push-gcr
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-  #       with:
-  #         repository: 'aventiortechnology/CRIO-SiteApp'
-  #         ref: 'main'
-  #         path: '${{needs.build-push-gcr.outputs.IMAGE_NAME}}'
-  #         token: '${{ secrets.PAT }}'
+  update-chart:
+    name: Update Helm Chart Values file
+    runs-on: ubuntu-latest
+    needs: build-push-gcr
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: 'aventiortechnology/CRIO-SiteApp'
+          ref: 'main'
+          # path: '${{needs.build-push-gcr.outputs.IMAGE_NAME}}'
+          token: '${{ secrets.PAT }}'
 
-  #     - name: Update values.yaml
-  #       uses: fjogeleit/yaml-update-action@main
-  #       with:
-  #         valueFile: 'values.yaml'
-  #         propertyPath: 'image.tag'
-  #         value: ${{needs.build-push-gcr.outputs.IMAGE_TAG}}
-  #         repository: 'aventiortechnology/CRIO-SiteApp'
-  #         commitChange: true
+      - name: Update values.yaml
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: 'sampleapp/values.yaml'
+          propertyPath: 'image.tag'
+          value: ${{needs.build-push-gcr.outputs.IMAGE_TAG}}
+          repository: 'aventiortechnology/CRIO-SiteApp'
+          token: '${{ secrets.PAT }}'
+          commitChange: true
