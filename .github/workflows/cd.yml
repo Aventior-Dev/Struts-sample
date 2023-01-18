@@ -60,10 +60,11 @@ jobs:
         # docker push $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:$GIT_TAG
         echo "git_tag=$GIT_TAG" >> $GITHUB_OUTPUT
       
-    - name: Test output variable
-      run: echo $VAR
-      env:
-       VAR: ${{ steps.docker-push.output.git_tag }}
+    - name: Set color
+      id: random-color-generator
+      run: echo "SELECTED_COLOR=green" >> $GITHUB_OUTPUT
+    - name: Get color
+      run: echo "The selected color is ${{ steps.random-color-generator.outputs.SELECTED_COLOR }}"
 
   # update-chart:
   #   name: Update Helm Chart Values file
