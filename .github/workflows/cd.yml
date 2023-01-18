@@ -64,7 +64,7 @@ jobs:
       id: random-color-generator
       run: echo "SELECTED_COLOR=green" >> $GITHUB_OUTPUT
     - name: Get color
-      run: echo "The selected color is ${{ steps.random-color-generator.outputs.SELECTED_COLOR }}"
+      run: echo "The selected color is ${{ steps.random-color-generator.outputs.SELECTED_COLOR }} and the tag is ${{ steps.docker-push.outputs.git_tag }}."
 
   # update-chart:
   #   name: Update Helm Chart Values file
