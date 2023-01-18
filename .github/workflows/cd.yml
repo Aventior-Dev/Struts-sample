@@ -46,7 +46,6 @@ jobs:
 # Add validation to check artifact exists on registry
     - name: Configure Docker Client
       run: |-
-        gcloud auth configure-docker --quiet
         gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
 
     - name: Push Docker Image to Container Registry (GCR)
@@ -67,13 +66,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          repository: 'aventiortechnology/CRIO-SiteApp'
-          ref: 'main'
-          # path: '${{needs.build-push-gcr.outputs.IMAGE_NAME}}'
-          token: '${{ secrets.PAT }}'
+        # with:
+        #   repository: 'aventiortechnology/CRIO-SiteApp'
+        #   ref: 'main'
+        #   # path: '${{needs.build-push-gcr.outputs.IMAGE_NAME}}'
+        #   token: '${{ secrets.PAT }}'
 
-      - name: Update values.yaml
+      - name: Update Helm Chart yaml files.
         uses: fjogeleit/yaml-update-action@main
         with:
           valueFile: sampleapp/values.yaml
