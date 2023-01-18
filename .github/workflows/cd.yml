@@ -14,7 +14,7 @@ jobs:
       REGION: us-central1
     outputs:
       IMAGE_NAME: ${{ env.IMAGE_NAME }}
-      IMAGE_TAG: ${{ steps.docker-push.output.git_tag }}
+      IMAGE_TAG: ${{ steps.docker-push.outputs.git_tag }}
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -35,67 +35,61 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
 
-#     - name: Build package
-#       run: mvn -f pom.xml  package -q
+    - name: Build package
+      run: mvn -f pom.xml  package -q
 
-#     - name: Publish package
-#       run: mvn deploy
+    - name: Publish package
+      run: mvn deploy
 
-#     - name: Build Docker Image
-#       run: docker build -t $IMAGE_NAME:latest .
-# # Add validation to check artifact exists on registry
-#     - name: Configure Docker Client
-#       run: |-
-#         gcloud auth configure-docker --quiet
-#         gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
+    - name: Build Docker Image
+      run: docker build -t $IMAGE_NAME:latest .
+# Add validation to check artifact exists on registry
+    - name: Configure Docker Client
+      run: |-
+        gcloud auth configure-docker --quiet
+        gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
 
     - name: Push Docker Image to Container Registry (GCR)
       id: docker-push
       env:
         GIT_TAG: v1.0.1
       run: |-
-        # docker tag $IMAGE_NAME:latest $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:latest
-        # docker tag $IMAGE_NAME:latest $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:$GIT_TAG
-        # docker push $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:latest
-        # docker push $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:$GIT_TAG
+        docker tag $IMAGE_NAME:latest $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:latest
+        docker tag $IMAGE_NAME:latest $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:$GIT_TAG
+        docker push $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:latest
+        docker push $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:$GIT_TAG
         echo "git_tag=$GIT_TAG" >> $GITHUB_OUTPUT
-      
-    - name: Set color
-      id: random-color-generator
-      run: echo "SELECTED_COLOR=green" >> $GITHUB_OUTPUT
-    - name: Get color
-      run: echo "The selected color is ${{ steps.random-color-generator.outputs.SELECTED_COLOR }} and the tag is ${{ steps.docker-push.outputs.git_tag }}."
 
-  # update-chart:
-  #   name: Update Helm Chart Values file
-  #   runs-on: ubuntu-latest
-  #   needs: build-push-gcr
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-  #       with:
-  #         repository: 'aventiortechnology/CRIO-SiteApp'
-  #         ref: 'main'
-  #         # path: '${{needs.build-push-gcr.outputs.IMAGE_NAME}}'
-  #         token: '${{ secrets.PAT }}'
+  update-chart:
+    name: Update Helm Chart Values file
+    runs-on: ubuntu-latest
+    needs: build-push-gcr
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: 'aventiortechnology/CRIO-SiteApp'
+          ref: 'main'
+          # path: '${{needs.build-push-gcr.outputs.IMAGE_NAME}}'
+          token: '${{ secrets.PAT }}'
 
-  #     - name: Update values.yaml
-  #       uses: fjogeleit/yaml-update-action@main
-  #       with:
-  #         valueFile: sampleapp/values.yaml
-  #         # propertyPath: 'image.tag'
-  #         # value: ${{needs.build-push-gcr.outputs.IMAGE_TAG}}
-  #         repository: 'aventiortechnology/CRIO-SiteApp'
-  #         branch: main
-  #         token: '${{ secrets.PAT }}'
-  #         message: 'Update Image Version to ${{needs.build-push-gcr.outputs.IMAGE_TAG}}'
-  #         commitChange: true
-  #         changes: |
-  #           {
-  #             "sampleapp/values.yaml": {
-  #               "image.tag": "${{needs.build-push-gcr.outputs.IMAGE_TAG}}"
-  #             },
-  #              "sampleapp/Chart.yaml": {
-  #               "appVersion": "${{needs.build-push-gcr.outputs.IMAGE_TAG}}"
-  #             }
-  #           }
+      - name: Update values.yaml
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: sampleapp/values.yaml
+          # propertyPath: 'image.tag'
+          # value: ${{needs.build-push-gcr.outputs.IMAGE_TAG}}
+          repository: 'aventiortechnology/CRIO-SiteApp'
+          branch: main
+          token: '${{ secrets.PAT }}'
+          message: 'Update Image Version to ${{needs.build-push-gcr.outputs.IMAGE_TAG}}'
+          commitChange: true
+          changes: |
+            {
+              "sampleapp/values.yaml": {
+                "image.tag": "${{needs.build-push-gcr.outputs.IMAGE_TAG}}"
+              },
+               "sampleapp/Chart.yaml": {
+                "appVersion": "${{needs.build-push-gcr.outputs.IMAGE_TAG}}"
+              }
+            }
