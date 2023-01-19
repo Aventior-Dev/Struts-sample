@@ -43,6 +43,10 @@ jobs:
         PACKAGE=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.groupId -q -DforceStdout)
         ARTIFACT_ID=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.artifactId -q -DforceStdout)
         ARTIFACT_LIST=( $(gcloud artifacts versions list --repository=sampleappmvn --package=$PACKAGE:$ARTIFACT_ID --project=$PROJECT_ID --location=$REGION --format="value(VERSION)") )
+        if [[ " ${ARTIFACT_LIST[*]} " =~ " ${APP_VERSION} " ]]
+        then
+          echo "Version already exists"
+        fi
         echo "ART_VERSION=$ARTIFACT_LIST" >> $GITHUB_OUTPUT
 
     - name: Print Artifact Version
