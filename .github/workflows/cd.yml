@@ -39,7 +39,7 @@ jobs:
     - name: Check Artifact Version
       id: version
       run: |-
-        VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version))
+        VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version)
         echo "ART_VERSION=$VERSION" >> $GITHUB_OUTPUT
 
     - name: Print Artifact Version
