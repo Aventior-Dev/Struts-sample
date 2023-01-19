@@ -39,8 +39,11 @@ jobs:
     - name: Check Artifact Version
       id: version
       run: |-
-        VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
-        echo "ART_VERSION=$VERSION" >> $GITHUB_OUTPUT
+        APP_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
+        PACKAGE=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.groupId -q -DforceStdout)
+        ARTIFACT_ID=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.artifactId -q -DforceStdout)
+        ARTIFACT_LIST=( $(gcloud artifacts versions list --repository=sampleappmvn --package=$PACKAGE:$ARTIFACT_ID --project=$PROJECT_ID --format="value(VERSION)") )
+        echo "ART_VERSION=$ARTIFACT_LIST" >> $GITHUB_OUTPUT
 
     - name: Print Artifact Version
       run: echo "This is the artifact version-> ${{ steps.version.outputs.ART_VERSION }}"
