@@ -45,7 +45,7 @@ jobs:
         ARTIFACT_LIST=( $(gcloud artifacts versions list --repository=sampleappmvn --package=$PACKAGE:$ARTIFACT_ID --project=$PROJECT_ID --location=$REGION --format="value(VERSION)") )
         if [[ " ${ARTIFACT_LIST[*]} " =~ " ${APP_VERSION} " ]]
         then
-          echo "[ ERROR ] Version already exists in Artifact Registry!!!"
+          echo "[ ERROR ] Version -> $APP_VERSION <- already exists in Artifact Registry!!!"
           exit 1
         fi
         echo "ART_VERSION=$ARTIFACT_LIST" >> $GITHUB_OUTPUT
