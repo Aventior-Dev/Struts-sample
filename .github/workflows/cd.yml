@@ -36,57 +36,66 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
 
-    - name: Build package
-      run: mvn -f pom.xml  package -q
-
-    - name: Publish package
-      run: mvn deploy
-
-    - name: Build Docker Image
-      run: docker build -t $IMAGE_NAME:latest .
-# Add validation to check artifact exists on registry
-    - name: Configure Docker Client
+    - name: Check Artifact Version
+      id: version
       run: |-
-        gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
+        VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version))
+        echo "ART_VERSION=$VERSION" >> $GITHUB_OUTPUT
 
-    - name: Push Docker Image to Container Registry (GCR)
-      id: docker-push
-      env:
-        GIT_TAG: v1.0.1
-      run: |-
-        docker tag $IMAGE_NAME:latest $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:latest
-        docker tag $IMAGE_NAME:latest $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:$GIT_TAG
-        docker push $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:latest
-        docker push $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:$GIT_TAG
-        echo "git_tag=$GIT_TAG" >> $GITHUB_OUTPUT
+    - name: Print Artifact Version
+      run: echo "This is the artifact version-> ${{ steps.version.outputs.ART_VERSION }}"
 
-  update-chart:
-    name: Update Helm Chart yaml files.
-    runs-on: ubuntu-latest
-    needs: build-push-gcr
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          repository: 'aventiortechnology/CRIO-SiteApp'
-          ref: 'main'
-          token: '${{ secrets.PAT }}'
+#     - name: Build package
+#       run: mvn -f pom.xml  package -q
 
-      - name: Update Helm Chart yaml files.
-        uses: fjogeleit/yaml-update-action@main
-        with:
-          valueFile: sampleapp/values.yaml
-          repository: 'aventiortechnology/CRIO-SiteApp'
-          branch: main
-          token: '${{ secrets.PAT }}'
-          message: 'Update Image Version to ${{needs.build-push-gcr.outputs.IMAGE_TAG}}'
-          commitChange: true
-          changes: |
-            {
-              "sampleapp/values.yaml": {
-                "image.tag": "${{needs.build-push-gcr.outputs.IMAGE_TAG}}"
-              },
-               "sampleapp/Chart.yaml": {
-                "appVersion": "${{needs.build-push-gcr.outputs.IMAGE_TAG}}"
-              }
-            }
+#     - name: Publish package
+#       run: mvn deploy
+
+#     - name: Build Docker Image
+#       run: docker build -t $IMAGE_NAME:latest .
+# # Add validation to check artifact exists on registry
+#     - name: Configure Docker Client
+#       run: |-
+#         gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
+
+#     - name: Push Docker Image to Container Registry (GCR)
+#       id: docker-push
+#       env:
+#         GIT_TAG: v1.0.1
+#       run: |-
+#         docker tag $IMAGE_NAME:latest $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:latest
+#         docker tag $IMAGE_NAME:latest $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:$GIT_TAG
+#         docker push $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:latest
+#         docker push $REGION-docker.pkg.dev/$PROJECT_ID/docker-images/$IMAGE_NAME:$GIT_TAG
+#         echo "git_tag=$GIT_TAG" >> $GITHUB_OUTPUT
+
+#   update-chart:
+#     name: Update Helm Chart yaml files.
+#     runs-on: ubuntu-latest
+#     needs: build-push-gcr
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v3
+#         with:
+#           repository: 'aventiortechnology/CRIO-SiteApp'
+#           ref: 'main'
+#           token: '${{ secrets.PAT }}'
+
+#       - name: Update Helm Chart yaml files.
+#         uses: fjogeleit/yaml-update-action@main
+#         with:
+#           valueFile: sampleapp/values.yaml
+#           repository: 'aventiortechnology/CRIO-SiteApp'
+#           branch: main
+#           token: '${{ secrets.PAT }}'
+#           message: 'Update Image Version to ${{needs.build-push-gcr.outputs.IMAGE_TAG}}'
+#           commitChange: true
+#           changes: |
+#             {
+#               "sampleapp/values.yaml": {
+#                 "image.tag": "${{needs.build-push-gcr.outputs.IMAGE_TAG}}"
+#               },
+#                "sampleapp/Chart.yaml": {
+#                 "appVersion": "${{needs.build-push-gcr.outputs.IMAGE_TAG}}"
+#               }
+#             }
