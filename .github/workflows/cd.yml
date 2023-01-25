@@ -89,7 +89,7 @@ jobs:
         uses: fjogeleit/yaml-update-action@main
         with:
           valueFile: siteapp/sampleapp/values.yaml
-          repository: 'aventiortechnology/CRIO-SiteApp'
+          repository: 'aventiortechnology/CRIO-Global'
           branch: main
           token: '${{ secrets.PAT }}'
           message: 'Update Image Version to ${{needs.build-push-gcr.outputs.IMAGE_TAG}}'
