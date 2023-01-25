@@ -88,7 +88,7 @@ jobs:
       - name: Update Helm Chart yaml files.
         uses: fjogeleit/yaml-update-action@main
         with:
-          valueFile: sampleapp/values.yaml
+          valueFile: siteapp/sampleapp/values.yaml
           repository: 'aventiortechnology/CRIO-SiteApp'
           branch: main
           token: '${{ secrets.PAT }}'
