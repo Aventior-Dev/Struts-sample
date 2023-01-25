@@ -57,7 +57,7 @@ jobs:
       run: mvn -f pom.xml  package -q
 
     - name: Publish package
-      run: mvn deploy
+      run: mvn deploym -X
 
     - name: Build Docker Image
       run: docker build -t $IMAGE_NAME:latest .
