@@ -35,7 +35,11 @@ jobs:
       with:
         java-version: '11'
         distribution: 'adopt'
-
+        
+    - name: Set outputs
+      id: shashort
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        
     - name: Check Artifact Version
       id: version
       run: |-
@@ -43,9 +47,9 @@ jobs:
         PACKAGE=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.groupId -q -DforceStdout)
         ARTIFACT_ID=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.artifactId -q -DforceStdout)
         ARTIFACT_LIST=( $(gcloud artifacts versions list --repository=sampleappmvn --package=$PACKAGE:$ARTIFACT_ID --project=$PROJECT_ID --location=$REGION --format="value(VERSION)") )
-        if [[ " ${ARTIFACT_LIST[*]} " =~ " ${APP_VERSION} " ]]
+        if [[ " ${ARTIFACT_LIST[*]} " =~ " ${{ steps.shashort.outputs.sha_short }} " ]]
         then
-          echo "[ ERROR ] Version -> $APP_VERSION <- already exists in Artifact Registry!!!"
+          echo "[ ERROR ] Version -> ${{ steps.shashort.outputs.sha_short }} <- already exists in Artifact Registry!!!"
           exit 1
         fi
 
