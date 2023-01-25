@@ -35,17 +35,20 @@ jobs:
       with:
         java-version: '11'
         distribution: 'adopt'
-
+        
+    - name: Set outputs
+      id: shashort
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        
     - name: Check Artifact Version
       id: version
       run: |-
-        APP_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)
         PACKAGE=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.groupId -q -DforceStdout)
         ARTIFACT_ID=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.artifactId -q -DforceStdout)
         ARTIFACT_LIST=( $(gcloud artifacts versions list --repository=sampleappmvn --package=$PACKAGE:$ARTIFACT_ID --project=$PROJECT_ID --location=$REGION --format="value(VERSION)") )
-        if [[ " ${ARTIFACT_LIST[*]} " =~ " ${APP_VERSION} " ]]
+        if [[ " ${ARTIFACT_LIST[*]} " =~ " ${{ steps.shashort.outputs.sha_short }} " ]]
         then
-          echo "[ ERROR ] Version -> $APP_VERSION <- already exists in Artifact Registry!!!"
+          echo "[ ERROR ] Version -> ${{ steps.shashort.outputs.sha_short }} <- already exists in Artifact Registry!!!"
           exit 1
         fi
 
@@ -53,7 +56,7 @@ jobs:
       run: mvn -f pom.xml  package -q
 
     - name: Publish package
-      run: mvn deploy
+      run: mvn deploy -X
 
     - name: Build Docker Image
       run: docker build -t $IMAGE_NAME:latest .
@@ -88,8 +91,8 @@ jobs:
       - name: Update Helm Chart yaml files.
         uses: fjogeleit/yaml-update-action@main
         with:
-          valueFile: sampleapp/values.yaml
-          repository: 'aventiortechnology/CRIO-SiteApp'
+          valueFile: siteapp/sampleapp/values.yaml
+          repository: 'aventiortechnology/CRIO-Global'
           branch: main
           token: '${{ secrets.PAT }}'
           message: 'Update Image Version to ${{needs.build-push-gcr.outputs.IMAGE_TAG}}'
