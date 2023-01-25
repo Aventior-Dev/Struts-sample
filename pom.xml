@@ -122,7 +122,6 @@
     <repository>
       <id>artifact-registry</id>
       <url>artifactregistry://us-central1-maven.pkg.dev/driver-297313/sampleappmvn</url>
-      <uniqueVersion>true</uniqueVersion>
       <releases>
         <enabled>true</enabled>
       </releases>
