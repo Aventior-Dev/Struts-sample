@@ -7,7 +7,7 @@
     <title>Hello there</title>
   </head>
   <body>
-    <h1>Hello there</h1>
+    <h1>Hello crio</h1>
 	<h1><s:property value = "errorMessage"/></h1>
 	<s:form action="authenticateuser">  
 	<s:textfield name="loginModel.username" label="Name"></s:textfield>  
