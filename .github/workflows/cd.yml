@@ -99,10 +99,10 @@ jobs:
           commitChange: true
           changes: |
             {
-              "sampleapp/values.yaml": {
+              "siteapp/sampleapp/values.yaml": {
                 "image.tag": "${{needs.build-push-gcr.outputs.IMAGE_TAG}}"
               },
-               "sampleapp/Chart.yaml": {
+               "siteapp/sampleapp/Chart.yaml": {
                 "appVersion": "${{needs.build-push-gcr.outputs.IMAGE_TAG}}"
               }
             }
