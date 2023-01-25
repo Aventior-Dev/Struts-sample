@@ -100,6 +100,7 @@
                     </scanTargets>
                 </configuration>
             </plugin>
+
         </plugins>
         <extensions>
         <extension>
@@ -109,29 +110,27 @@
         </extension>
         </extensions>
     </build>
-  <distributionManagement>
-    <snapshotRepository>
-      <id>artifact-registry</id>
-      <url>artifactregistry://us-central1-maven.pkg.dev/driver-297313/sampleappmvn</url>
-      <uniqueVersion>true</uniqueVersion>
-    </snapshotRepository>
-    <repository>
-      <id>artifact-registry</id>
-      <url>artifactregistry://us-central1-maven.pkg.dev/driver-297313/sampleappmvn</url>
-      <uniqueVersion>true</uniqueVersion>
-    </repository>
-  </distributionManagement>
-  <repositories>
-    <repository>
-      <id>artifact-registry</id>
-      <url>artifactregistry://us-central1-maven.pkg.dev/driver-297313/sampleappmvn</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
+<!--  <distributionManagement>-->
+<!--    <snapshotRepository>-->
+<!--      <id>artifact-registry</id>-->
+<!--      <url>artifactregistry://us-central1-maven.pkg.dev/driver-297313/sampleappmvn</url>-->
+<!--    </snapshotRepository>-->
+<!--    <repository>-->
+<!--      <id>artifact-registry</id>-->
+<!--      <url>artifactregistry://us-central1-maven.pkg.dev/driver-297313/sampleappmvn</url>-->
+<!--    </repository>-->
+<!--  </distributionManagement>-->
+<!--  <repositories>-->
+<!--    <repository>-->
+<!--      <id>artifact-registry</id>-->
+<!--      <url>artifactregistry://us-central1-maven.pkg.dev/driver-297313/sampleappmvn</url>-->
+<!--      <releases>-->
+<!--        <enabled>true</enabled>-->
+<!--      </releases>-->
+<!--      <snapshots>-->
+<!--        <enabled>true</enabled>-->
+<!--      </snapshots>-->
+<!--    </repository>-->
+<!--  </repositories>-->
 
 </project>
