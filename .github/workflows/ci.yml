@@ -17,10 +17,19 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+          
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: java
+          
       - name: Build with Maven
         run: mvn compile
       - name: Test with Maven
         run: mvn test
+        
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
         
       - name: Lint Code Base
         uses: github/super-linter@v4
@@ -28,7 +37,7 @@ jobs:
           VALIDATE_ALL_CODEBASE: true
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+          
 #     SonarQube analysis
       - name: Cache SonarQube packages
         uses: actions/cache@v1
