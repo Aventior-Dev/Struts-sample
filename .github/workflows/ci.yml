@@ -1,6 +1,11 @@
 name: CI
 
 on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - main
   pull_request:
     types: [opened, edited, reopened, synchronize]
     branches:
@@ -17,11 +22,27 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+          
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: java
+          
       - name: Build with Maven
         run: mvn compile
       - name: Test with Maven
         run: mvn test
-
+        
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        
+      - name: Lint Code Base
+        uses: github/super-linter@v4
+        env:
+          VALIDATE_ALL_CODEBASE: true
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
 #     SonarQube analysis
       - name: Cache SonarQube packages
         uses: actions/cache@v1
@@ -41,3 +62,4 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=struts_sample
+
